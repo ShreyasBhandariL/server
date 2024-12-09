@@ -21,6 +21,11 @@ const login = async (req, res) => {
         user.confirmed === true &&
         user.approved === true
       ) {
+        const existingOtp = await OTP.findOne({ userId: user._id });
+        if (existingOtp) {
+          await OTP.deleteOne({ _id: existingOtp._id });
+        }
+
         const otpCode = Math.floor(100000 + Math.random() * 900000);
         const otp = new OTP({ userId: user._id, otpCode });
         await otp.save();
@@ -48,7 +53,7 @@ const login = async (req, res) => {
           const encryptedUserId = encryptId(user._id);
           res.status(200).json({
             message: "OTP sent to your email for verification",
-            userId: encryptedUserId,
+            userId: encryptedUserId,userName: user.userName,
           });
         });
       } else {

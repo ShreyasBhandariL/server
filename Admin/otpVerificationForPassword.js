@@ -1,6 +1,6 @@
 const User = require("../Models/login");
 const Otp = require("../Models/otp");
-const {decryptId,encryptId} = require("../crypto")
+const {decryptId} = require("../crypto")
 
 const verifyForgotOtp = async (req, res) => {
   try {
@@ -20,8 +20,7 @@ const verifyForgotOtp = async (req, res) => {
     if(otpRecord.otpCode === otp){
     await Otp.deleteOne({ userId: userId }); 
     const user = await User.findById(userId);
-    const encryptedUserId = encryptId(user._id);
-    res.send({ userId: encryptedUserId });
+    res.send({ userId: user._id });
     }else {
       otpRecord.attemptCount += 1;
       await otpRecord.save();

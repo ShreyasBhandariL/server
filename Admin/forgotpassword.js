@@ -12,6 +12,11 @@ const forgotPassword = async (req, res) => {
     return res.status(400).send("User with given email does not exist.");
   }
 
+  const existingOtp = await OTP.findOne({ userId: user._id });
+        if (existingOtp) {
+          await OTP.deleteOne({ _id: existingOtp._id });
+        }
+
   const otpCode = Math.floor(100000 + Math.random() * 900000);
   const otp = new OTP({ userId: user._id, otpCode });
   await otp.save();
